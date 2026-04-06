@@ -8,6 +8,9 @@ const io = new Server(server);
 
 // 提供前端页面（public文件夹）
 app.use(express.static("public"));
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/display.html");
+});
 
 // 初始数据
 let matchData = [
