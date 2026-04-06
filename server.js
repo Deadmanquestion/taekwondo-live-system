@@ -14,10 +14,10 @@ app.get("/", (req, res) => {
 
 // 初始数据
 let matchData = [
-  { ring: "Ring 1", now: "Kata U18", next: "Kumite U18" },
-  { ring: "Ring 2", now: "Kumite U21", next: "Kata U21" },
-  { ring: "Ring 3", now: "Kata Open", next: "Kumite Open" },
-  { ring: "Ring 4", now: "Team Kata", next: "Team Kumite" }
+  { ring: "Ring 1", now: "Kata U18", next: "Kumite U18", time: 120 },
+  { ring: "Ring 2", now: "Kumite U21", next: "Kata U21", time: 120 },
+  { ring: "Ring 3", now: "Kata Open", next: "Kumite Open", time: 120 },
+  { ring: "Ring 4", now: "Team Kata", next: "Team Kumite", time: 120 }
 ];
 
 // 有人连接（display / admin）

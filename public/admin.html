@@ -5,31 +5,34 @@ const socket = io();
 let data = [];
 
 socket.on("update", (d) => {
-    data = d;
-    render();
+  data = d;
+  render();
 });
 
 function render() {
-    const form = document.getElementById("form");
-    form.innerHTML = "";
+  const form = document.getElementById("form");
+  form.innerHTML = "";
 
-    data.forEach((d, i) => {
-        form.innerHTML += `
-        <h3>${d.ring}</h3>
-        Now: <input id="now${i}" value="${d.now}">
-        Next: <input id="next${i}" value="${d.next}"><br><br>
-        `;
-    });
+  data.forEach((d, i) => {
+    form.innerHTML += `
+      <h3>${d.ring}</h3>
+      Now: <input id="now${i}" value="${d.now}">
+      Next: <input id="next${i}" value="${d.next}">
+      Time: <input id="time${i}" value="${d.time}">
+      <br><br>
+    `;
+  });
 }
 
 function send() {
-    const newData = data.map((d, i) => ({
-        ring: d.ring,
-        now: document.getElementById("now"+i).value,
-        next: document.getElementById("next"+i).value
-    }));
+  const newData = data.map((d, i) => ({
+    ring: d.ring,
+    now: document.getElementById("now"+i).value,
+    next: document.getElementById("next"+i).value,
+    time: parseInt(document.getElementById("time"+i).value)
+  }));
 
-    socket.emit("adminUpdate", newData);
+  socket.emit("adminUpdate", newData);
 }
 </script>
 

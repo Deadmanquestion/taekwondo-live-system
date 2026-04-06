@@ -2,74 +2,101 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Live Display</title>
-
+<title>LIVE MATCH</title>
 <script src="/socket.io/socket.io.js"></script>
 
 <style>
 body {
-    background: black;
-    color: white;
-    font-family: Arial;
-    text-align: center;
+  background: black;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+}
+
+h1 {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.timer {
+  font-size: 80px;
+  color: #ff3b3b;
+  margin-bottom: 30px;
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 20px;
 }
 
 .card {
-    background: #111;
-    padding: 20px;
-    border-radius: 15px;
+  background: #111;
+  padding: 20px;
+  border-radius: 20px;
+  transition: 0.3s;
+}
+
+.active {
+  box-shadow: 0 0 25px #00ff88;
+  transform: scale(1.05);
 }
 
 .ring {
-    font-size: 24px;
-    font-weight: bold;
+  font-size: 28px;
+  font-weight: bold;
 }
 
 .now {
-    color: #00ff88;
+  color: #00ff88;
+  font-size: 22px;
 }
 
 .next {
-    color: #ffaa00;
+  color: #ffaa00;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🔴 LIVE MATCH STATUS</h1>
-<p id="updateTime"></p>
-
+<h1>LIVE MATCH STATUS</h1>
+<div class="timer" id="mainTimer">02:00</div>
 <div class="grid" id="grid"></div>
 
 <script>
 const socket = io();
+let currentTime = 120;
+
+function formatTime(sec) {
+  const m = String(Math.floor(sec/60)).padStart(2,'0');
+  const s = String(sec%60).padStart(2,'0');
+  return m + ":" + s;
+}
+
+setInterval(() => {
+  if (currentTime > 0) {
+    currentTime--;
+    document.getElementById("mainTimer").innerText = formatTime(currentTime);
+  }
+}, 1000);
 
 socket.on("update", (data) => {
-    console.log("收到数据:", data);
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
 
-    const grid = document.getElementById("grid");
-    grid.innerHTML = "";
+  data.forEach((d, i) => {
+    if (i === 0) currentTime = d.time;
 
-    data.forEach((d) => {
-        grid.innerHTML += `
-        <div class="card">
-            <div class="ring">${d.ring}</div>
-            <div class="now">Now: ${d.now}</div>
-            <div class="next">Next: ${d.next}</div>
-        </div>
-        `;
-    });
-
-    document.getElementById("updateTime").innerText =
-    "Last Updated: " + new Date().toLocaleTimeString();
+    grid.innerHTML += `
+    <div class="card ${i===0 ? 'active' : ''}">
+      <div class="ring">${d.ring}</div>
+      <div class="now">Now: ${d.now}</div>
+      <div class="next">Next: ${d.next}</div>
+    </div>
+    `;
+  });
 });
 </script>
 
