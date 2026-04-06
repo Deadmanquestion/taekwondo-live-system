@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Live Match System</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: radial-gradient(circle at top, #111, #000);
+    color: white;
+}
+
+/* HEADER */
+.header {
+    text-align: center;
+    padding: 20px;
+}
+
+.live {
+    color: red;
+    font-weight: bold;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.3; }
+}
+
+#updateTime {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* CARD */
+.card {
+    background: linear-gradient(145deg, #111, #1a1a1a);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 0 20px rgba(0,255,150,0.1);
+    transform: scale(0.95);
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.ring {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.now {
+    color: #00ff88;
+    font-size: 22px;
+}
+
+.next {
+    color: #ffaa00;
+    font-size: 18px;
+}
+
+/* FULLSCREEN BUTTON */
+.fullscreen-btn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: #222;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<button class="fullscreen-btn" onclick="goFull()">⛶ Fullscreen</button>
+
+<div class="header">
+    <h1><span class="live">● LIVE</span> MATCH STATUS</h1>
+    <p id="updateTime"></p>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQjQTcja8_ZSCqvvJT3nDYvcOG0ZzoC_Ispi12mbkWvVisnyiUZcfHZ7rC8AXr8ljcPUJPt5W0xO8Jg/pub?output=csv";
+
+async function loadData() {
+    const res = await fetch(sheetURL);
+    const text = await res.text();
+
+    const rows = text.trim().split("\n").slice(1);
+    const grid = document.getElementById("grid");
+
+    grid.innerHTML = "";
+
+    rows.forEach((row, i) => {
+        const cols = row.split(",");
+
+        if (cols.length < 3) return;
+
+        const ring = cols[0];
+        const now = cols[1];
+        const next = cols[2];
+
+        const card = `
+        <div class="card" style="animation-delay:${i * 0.1}s">
+            <div class="ring">${ring}</div>
+            <div class="now">Now: ${now}</div>
+            <div class="next">Next: ${next}</div>
+        </div>
+        `;
+
+        grid.innerHTML += card;
+    });
+
+    document.getElementById("updateTime").innerText =
+    "Last Updated: " + new Date().toLocaleTimeString();
+}
+
+// 自动刷新
+setInterval(loadData, 3000);
+loadData();
+
+// 全屏模式
+function goFull() {
+    document.documentElement.requestFullscreen();
+}
+
+</script>
+
+</body>
+</html>
